@@ -146,7 +146,12 @@ int main(void)
   uint8_t status = 255;
 
   //VL53L5CX_Reset_Sensor(&(Dev.platform));
-  //status = vl53l5cx_set_i2c_address(&Dev, 0x20);
+  status = vl53l5cx_set_i2c_address(&Dev, 0x20);
+  if(status) {
+    printf("vl53l5cx_set_i2c_address failed\n");
+    return status;
+  }
+  Dev.platform.address = 0x20;
 
   uint8_t isAlive;
 	status = vl53l5cx_is_alive(&Dev, &isAlive);
