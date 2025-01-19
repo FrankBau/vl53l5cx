@@ -20,6 +20,20 @@
 
 #include <main.h>
 
+	/* Results can be tuned in order to reduce I2C access and RAM footprints.
+	 * The 'platform.h' file contains macros used to disable output. If user declare 
+	 * one of these macros, the results will not be sent through I2C, and the array will not 
+	 * be created into the VL53L5CX_ResultsData structure.
+	 * For the minimum size, ST recommends 1 targets per zone, and only keep distance_mm,
+	 * target_status, and nb_target_detected. The following macros can be defined into file 'platform.h':
+	 */
+#define VL53L5CX_DISABLE_AMBIENT_PER_SPAD
+#define VL53L5CX_DISABLE_NB_SPADS_ENABLED
+#define VL53L5CX_DISABLE_SIGNAL_PER_SPAD
+#define VL53L5CX_DISABLE_RANGE_SIGMA_MM
+#define VL53L5CX_DISABLE_REFLECTANCE_PERCENT
+#define VL53L5CX_DISABLE_MOTION_INDICATOR
+	
 /**
  * @brief Structure VL53L5CX_Platform needs to be filled by the customer,
  * depending on his platform. At least, it contains the VL53L5CX I2C address.

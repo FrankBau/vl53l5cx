@@ -157,13 +157,24 @@ int main(void)
 
 	status = vl53l5cx_init(&Dev);
 	if(status) {
-		printf("VL53L5CX ULD Loading failed\n");
+		printf("vl53l5cx_init failed\n");
 		return status;
 	}
 
 	printf("VL53L5CX ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
 
+  // The maximum ranging frequency is 60 Hz when configured with a 4x4 resolution and 15 Hz with an 8x8 resolution
+  status = vl53l5cx_set_ranging_frequency_hz(&Dev, 10);
+	if(status) {
+		printf("vl53l5cx_set_ranging_frequency_hz failed\n");
+		return status;
+	}
+
   status = vl53l5cx_start_ranging(&Dev);
+	if(status) {
+		printf("vl53l5cx_start_ranging failed\n");
+		return status;
+	}
 
   while (1)
   {
