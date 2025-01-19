@@ -21,7 +21,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include "vl53l5cx_api.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,6 +70,33 @@ int __io_putchar (int ch)
   return ch;
 }
 
+// https://en.wikipedia.org/wiki/ANSI_escape_code
+
+#define CLEAR "\033[2J"
+#define HOME "\033[H"
+#define RESET "\033[0m"
+#define BOLD "\033[1m"
+
+// Foreground Colors
+#define FG_Black "\033[30m"
+#define FG_Red "\033[31m"
+#define FG_Green "\033[32m"
+#define FG_Yellow "\033[33m"
+#define FG_Blue "\033[34m"
+#define FG_Magenta "\033[35m"
+#define FG_Cyan "\033[36m"
+#define FG_White "\033[37m"
+
+// Background Colors
+#define BG_Black "\033[40m"
+#define BG_Red "\033[41m"
+#define BG_Green "\033[42m"
+#define BG_Yellow "\033[43m"
+#define BG_Blue "\033[44m"
+#define BG_Magenta "\033[45m"
+#define BG_Cyan "\033[46m"
+#define BG_White "\033[47m"
+
 /* USER CODE END 0 */
 
 /**
@@ -102,15 +132,73 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  extern int example1(void);
-  example1();
+  printf("STM32L432 VL53L5CX-SATEL Demo\n");
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  VL53L5CX_Configuration 	Dev;
+  Dev.platform.address = VL53L5CX_DEFAULT_I2C_ADDRESS;
+	Dev.platform.hi2c = &hi2c1;
+
+  uint8_t status = 255;
+
+  //VL53L5CX_Reset_Sensor(&(Dev.platform));
+  //status = vl53l5cx_set_i2c_address(&Dev, 0x20);
+
+  uint8_t isAlive;
+	status = vl53l5cx_is_alive(&Dev, &isAlive);
+	if(!isAlive || status) {
+		printf("VL53L5CX not detected at requested address\n");
+		return status;
+	}
+
+	status = vl53l5cx_init(&Dev);
+	if(status) {
+		printf("VL53L5CX ULD Loading failed\n");
+		return status;
+	}
+
+	printf("VL53L5CX ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
+
+  status = vl53l5cx_start_ranging(&Dev);
+
   while (1)
   {
+		/* Use polling function to know when a new measurement is ready.
+		 * Another way can be to wait for HW interrupt raised on PIN A3
+		 * (GPIO 1) when a new measurement is ready */
+    uint8_t isReady;
+    status = vl53l5cx_check_data_ready(&Dev, &isReady);
+		if(isReady)
+		{
+      printf(CLEAR RESET HOME);
+      VL53L5CX_ResultsData Results;
+			vl53l5cx_get_ranging_data(&Dev, &Results);
+      for(int i = 0; i < 16; i++)
+			{
+        printf(RESET);  // Reset color and style
+        if(i % 4 == 0) {
+          printf("\n");
+        }
+        uint8_t stat = Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i];
+        int16_t dist = Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i];
+        if(stat == 5) {
+          printf(BOLD);
+        }
+        if(dist < 100) printf(FG_Red);
+        else if(dist < 200) printf(FG_Yellow);
+        else if(dist < 300) printf(FG_Green);
+        else if(dist < 500) printf(FG_Blue);
+        else printf(FG_Black);
+        printf("%5d", dist);
+      }
+      printf("\n");
+    }
+    HAL_Delay(5);
+    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

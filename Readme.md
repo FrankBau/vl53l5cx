@@ -17,7 +17,6 @@ header pins 1..9:
 
 The I2C bus on the VL53L5CX has a maximum speed of 1 Mbits/s and uses a device 8-bit address of 0x52.
 
-
 # Example output
 
 ```
@@ -73,3 +72,9 @@ other statuses are below the 50% confidence level."
 1. PCB4109A; VL53L5CX-Satel Schematics
 
 1. VL53L5CX-SATEL Data brief "VL53L5CX breakout board Time-of-Flight 8x8 multizone ranging sensor with wide field of view"
+
+
+# FAQ
+
+Q: VL53L7CX/VL53L5CX API similarity and part identification <br>
+A: https://community.st.com/t5/imaging-sensors/vl53l7cx-vl53l5cx-api-similarity-and-part-identification/td-p/576057
