@@ -64,11 +64,13 @@ uint8_t VL53L5CX_Reset_Sensor(
 	/* (Optional) Need to be implemented by customer. This function returns 0 if OK */
 	
 	/* Set pin LPN to LOW */
+	HAL_GPIO_WritePin(EVK_LPn_GPIO_Port, EVK_LPn_Pin, GPIO_PIN_RESET);
 	/* Set pin AVDD to LOW */
 	/* Set pin VDDIO  to LOW */
 	VL53L5CX_WaitMs(p_platform, 100);
 
 	/* Set pin LPN of to HIGH */
+	HAL_GPIO_WritePin(EVK_LPn_GPIO_Port, EVK_LPn_Pin, GPIO_PIN_SET);
 	/* Set pin AVDD of to HIGH */
 	/* Set pin VDDIO of  to HIGH */
 	VL53L5CX_WaitMs(p_platform, 100);
@@ -100,7 +102,7 @@ uint8_t VL53L5CX_WaitMs(
 		uint32_t TimeMs)
 {
 	uint8_t status = 255;
-
+	(void)p_platform;
 	HAL_Delay(TimeMs);
 	
 	status = 0;

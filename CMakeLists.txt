@@ -46,16 +46,15 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    VL53L5CX_ULD_API/src/vl53l5cx_api.c
-    Platform/platform.c
-    Examples/Example_1_ranging_basic.c  
+    VL53L5CX_ULD_driver_2.0.1/VL53L5CX_ULD_API/src/vl53l5cx_api.c
+    VL53L5CX_ULD_driver_2.0.1/Platform/platform.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
-    VL53L5CX_ULD_API/inc
-    Platform
+    VL53L5CX_ULD_driver_2.0.1/VL53L5CX_ULD_API/inc
+    VL53L5CX_ULD_driver_2.0.1/Platform
 )
 
 # Add project symbols (macros)

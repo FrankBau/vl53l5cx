@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "stm32l4xx_hal_gpio.h"
 #include "vl53l5cx_api.h"
 /* USER CODE END Includes */
 
@@ -134,6 +135,9 @@ int main(void)
 
   printf("STM32L432 VL53L5CX-SATEL Demo\n");
 
+  HAL_GPIO_WritePin(EVK_PWR_EN_GPIO_Port, EVK_PWR_EN_Pin, GPIO_PIN_SET); // power on
+  HAL_Delay(100);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -143,16 +147,16 @@ int main(void)
   Dev.platform.address = VL53L5CX_DEFAULT_I2C_ADDRESS;
 	Dev.platform.hi2c = &hi2c1;
 
+  // VL53L5CX_Reset_Sensor(&(Dev.platform));
+  
+  // status = vl53l5cx_set_i2c_address(&Dev, 0x20);
+  // if(status) {
+  //   printf("vl53l5cx_set_i2c_address failed\n");
+  //   return status;
+  // }
+  // Dev.platform.address = 0x20;
+
   uint8_t status = 255;
-
-  //VL53L5CX_Reset_Sensor(&(Dev.platform));
-  status = vl53l5cx_set_i2c_address(&Dev, 0x20);
-  if(status) {
-    printf("vl53l5cx_set_i2c_address failed\n");
-    return status;
-  }
-  Dev.platform.address = 0x20;
-
   uint8_t isAlive;
 	status = vl53l5cx_is_alive(&Dev, &isAlive);
 	if(!isAlive || status) {

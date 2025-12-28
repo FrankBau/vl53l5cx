@@ -1,3 +1,23 @@
+# Nucleo-L432KC
+
+    +---- USB ----+
+    PA9         VIN
+    PA10        GND
+    NRST        NRST
+    GND         +5V
+    PA12        PA2
+    PB0         PA7
+    PB7         PA6
+    PB6         PA5
+    PB1  +----+ PA4
+    N.C. |    | PA3
+    N.C. +----+ PA1
+    PA8         PA0
+    PA11        AREF
+    PB5         +3V3
+    PB4         PB3
+    +---- RST ----+
+
 # PCB4109A; VL53L5CX-Satel
 
 header pins 1..9:
@@ -15,7 +35,17 @@ header pins 1..9:
 | 9 | EVK_INT       | PB1   |  open-drain output, pull-up R on satel |
 
 
-The I2C bus on the VL53L5CX has a maximum speed of 1 Mbits/s and uses a device 8-bit address of 0x52.
+The I2C bus on the VL53L5CX has a maximum speed of 1 Mbits/s and uses a default device 8-bit address of 0x52.
+
+# minimal wiring
+
+satel       nucleo
+GND         GND
+EVK_IOVDD   +3V3
+EVK_AVDD    +5V
+EVK_PWR_EN  +5V
+EVK_SCL     PA9
+EVK_SDA     PA10
 
 # Example output
 
@@ -41,6 +71,7 @@ UM2884: "To have consistent data, the user needs to filter invalid target status
 
 1. VL53L5CX-SATEL Data brief "VL53L5CX breakout board Time-of-Flight 8x8 multizone ranging sensor with wide field of view"
 
+1. STSW-IMG023 Ultra Lite Driver (ULD) for VL53L5CX multi-zone sensor https://www.st.com/en/embedded-software/stsw-img023.html
 
 # FAQ
 
