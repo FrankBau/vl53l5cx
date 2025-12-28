@@ -146,10 +146,34 @@ int main(void)
 
 	printf("VL53L5CX ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
 
-  // The maximum ranging frequency is 60 Hz when configured with a 4x4 resolution and 15 Hz with an 8x8 resolution
-  status = vl53l5cx_set_ranging_frequency_hz(&Dev, 10);
-	if(status) {
-		printf("vl53l5cx_set_ranging_frequency_hz failed\n");
+	/* Set resolution in 8x8. WARNING : As others settings depend to this
+	 * one, it must be the first to use.
+	 */
+	status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_8X8);
+	if(status)
+	{
+		printf("vl53l5cx_set_resolution failed, status %u\n", status);
+		return status;
+	}
+
+  int n = 8;
+
+	/* Set ranging frequency to 10Hz.
+	 * Using 4x4, min frequency is 1Hz and max is 60Hz
+	 * Using 8x8, min frequency is 1Hz and max is 15Hz
+	 */
+	status = vl53l5cx_set_ranging_frequency_hz(&Dev, 10);
+	if(status)
+	{
+		printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
+		return status;
+	}
+
+  /* Set target order to closest */
+	status = vl53l5cx_set_target_order(&Dev, VL53L5CX_TARGET_ORDER_CLOSEST);
+	if(status)
+	{
+		printf("vl53l5cx_set_target_order failed, status %u\n", status);
 		return status;
 	}
 
@@ -171,9 +195,9 @@ int main(void)
       printf("%10lu; ", (long unsigned)HAL_GetTick());
       VL53L5CX_ResultsData Results;
 			vl53l5cx_get_ranging_data(&Dev, &Results);
-      for(int i = 0; i < 16; i++)
+      for(int i = 0; i < n*n; i++)
 			{
-        if(i % 4 == 0) {
+        if(i % n == 0) {
           printf("    ");
         }
         uint8_t stat = Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i];

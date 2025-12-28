@@ -35,8 +35,8 @@ def find_nucleo_port(vid=0x0483, pid=None, manufacturer_substr=None):
 # -----------------------------
 PORT = find_nucleo_port()
 BAUD = 115200
-GRID_W = 4
-GRID_H = 4
+GRID_W = 8
+GRID_H = 8
 
 # -----------------------------
 # SERIAL SETUP
