@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "stm32l4xx_hal.h"
 #include "stm32l4xx_hal_gpio.h"
 #include "vl53l5cx_api.h"
 /* USER CODE END Includes */
@@ -70,33 +71,6 @@ int __io_putchar (int ch)
   HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xFFFF);
   return ch;
 }
-
-// https://en.wikipedia.org/wiki/ANSI_escape_code
-
-#define CLEAR "\033[2J"
-#define HOME "\033[H"
-#define RESET "\033[0m"
-#define BOLD "\033[1m"
-
-// Foreground Colors
-#define FG_Black "\033[30m"
-#define FG_Red "\033[31m"
-#define FG_Green "\033[32m"
-#define FG_Yellow "\033[33m"
-#define FG_Blue "\033[34m"
-#define FG_Magenta "\033[35m"
-#define FG_Cyan "\033[36m"
-#define FG_White "\033[37m"
-
-// Background Colors
-#define BG_Black "\033[40m"
-#define BG_Red "\033[41m"
-#define BG_Green "\033[42m"
-#define BG_Yellow "\033[43m"
-#define BG_Blue "\033[44m"
-#define BG_Magenta "\033[45m"
-#define BG_Cyan "\033[46m"
-#define BG_White "\033[47m"
 
 /* USER CODE END 0 */
 
@@ -194,26 +168,24 @@ int main(void)
     status = vl53l5cx_check_data_ready(&Dev, &isReady);
 		if(isReady)
 		{
-      printf(CLEAR RESET HOME);
+      printf("%10lu; ", (long unsigned)HAL_GetTick());
       VL53L5CX_ResultsData Results;
 			vl53l5cx_get_ranging_data(&Dev, &Results);
       for(int i = 0; i < 16; i++)
 			{
-        printf(RESET);  // Reset color and style
         if(i % 4 == 0) {
-          printf("\n");
+          printf("    ");
         }
         uint8_t stat = Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i];
         int16_t dist = Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i];
-        if(stat == 5) {
-          printf(BOLD);
+        switch(stat)
+        {
+          case 5: break;  // 100% - Range valid
+          case 6:         // 50% - Wrap around not performed (typically the first range)
+          case 9: dist = -dist; break;  // 50% -Range valid with large pulse (may be due to a merged target)
+          default: dist = 0;  // else: 0% confidence
         }
-        if(dist < 100) printf(FG_Red);
-        else if(dist < 200) printf(FG_Yellow);
-        else if(dist < 300) printf(FG_Green);
-        else if(dist < 500) printf(FG_Blue);
-        else printf(FG_Black);
-        printf("%5d", dist);
+        printf("%5d; ", dist);
       }
       printf("\n");
     }
